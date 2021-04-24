@@ -24,7 +24,7 @@ void ReadParts()
         if(x == 1)
         {
             fscanf(file,"%[^\t]%[^\t]%[^\t]%[^\n]",&p.part_num, &p.name, &p.class, &p.stock);
-            printf("%*s | %*s | %*s | %*d\n",
+            printf("%*s | %*s | %*d | %*d\n",
                    SEPARADOR, p.part_num,
                    SEPARADORNAME, p.name,
                    SEPARADOR, p.class,
