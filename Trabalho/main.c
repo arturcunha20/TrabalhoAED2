@@ -5,32 +5,58 @@
 #define SEPARADORNAME -50
 #define SEPARADORID -6
 
-typedef struct {
+typedef struct _Parts{
     char part_num[20];
-    char name[100];
+    char name[300];
     char class[50];
     char stock[50];
+    struct _Parts* next;
 }Parts;
 
-void ReadParts()
-{
-    FILE *file;
-    Parts p;
+Parts * head_insert(Parts* parts, char *part_num, char *name, char *class, char *stock) {
+    Parts *tmp = (Parts*) malloc(sizeof(Parts));
 
-    file = fopen("../Files/parts.tsv","r");
-    int x=0;
-    while (!feof(file))
-    {
-        fscanf(file,"%[^\t]\t%[^\t]\t%[^\t]\t%[^\t]\t",&p.part_num, &p.name, &p.class, &p.stock);
-        printf("%s | %s | %s | %s\n",p.part_num,p.name,p.class,p.stock);
-    }
+    strcpy(tmp->part_num, part_num);
+    strcpy(tmp->name, name);
+    strcpy(tmp->class, class);
+    strcpy(tmp->stock, stock);
+    tmp->next = parts;
 
-    printf("\n");
-    fclose(file);
+    return tmp;
 }
 
+Parts * ReadParts(Parts *parts)
+{
+    FILE *file;
+    file = fopen("../Files/parts.tsv","r");
+    while (!feof(file))
+    {
+        char part_num[300];
+        char name[300];
+        char class[300];
+        char stock[300];
 
+        fscanf(file,"%[^\t]\t%[^\t]\t%[^\t]\t%[^\t]\t",&part_num, &name, &class, &stock);
+        printf("olA   ");
+        parts = head_insert(parts, part_num, name, class, stock);
+    }
+    printf("\n");
+    fclose(file);
+
+    return parts;
+}
+
+void visit_list_rec(Parts *parts) {
+    if (parts) {
+        printf("%s %s %s %s",parts->part_num,parts->name,parts->class,parts->stock);
+        printf("\n");
+        visit_list_rec(parts->next);
+    } else
+        printf("\n");
+}
 int main() {
-    ReadParts();
+    Parts *parts = NULL;
+    parts = ReadParts(parts);
+    visit_list_rec(parts);
     return 0;
 }
