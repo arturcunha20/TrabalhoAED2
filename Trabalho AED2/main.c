@@ -219,6 +219,8 @@ int main() {
     printf("$0");
     listar_Sets(sets);
 
+    printf("asuuhaskfhbkahgsfas");
+
     /*
     do
     {
