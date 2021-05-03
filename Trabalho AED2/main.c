@@ -185,18 +185,26 @@ Sets * Read_Sets(Sets *sets)
 Sets * Set_by_theme(Sets *lst)
 {
     char tema[100];
+    int cont = 0;
 
-    //printf("Diga o tema -> ");
-    //fgets(tema, sizeof(tema), stdin);
-    strcpy(tema,"Cowboys");
+    printf("Diga o tema -> ");
+    gets(tema);
+    //strcpy(tema,"Castle");
+    printf("%s",tema);
 
     Sets *aux = lst->next;
-    for (; aux != lst; aux = aux->next) {
-        if (strcmp(aux->theme,tema) == 0) {
-            printf("ola ");
+    
+    for ( ; lst ; lst = lst->next ) {
+        if(strcmp(lst->theme,tema) == 0){
+            cont++;
+            printf("%s %s %s %s\n",lst->set_num, lst->name, lst->year, lst->theme);
         }
     }
-    printf("olaaaaaaaaaaaaaa");
+
+    if(cont == 0)
+    {
+        printf("NADA");
+    }
     //printf("%d",i);
     return aux == lst ? NULL : aux;
 }
@@ -212,14 +220,8 @@ int main() {
     parts_sets = Read_Parts_Sets(parts_sets);
     parts = Read_Parts(parts);
 
-    //listar_Parts(parts);
-    //listar_Parts_Sets(parts_sets);
-
     sets = Set_by_theme(sets);
-    printf("$0");
-    listar_Sets(sets);
 
-    printf("ola123");
 
     /*
     do
