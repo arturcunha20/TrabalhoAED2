@@ -29,6 +29,13 @@ typedef struct _sets{
     struct _sets* previous;
 }Sets;
 
+typedef struct {
+    char set_num[500];
+    char name[500];
+    char year[50];
+    char theme[500];
+}Aux_Sets;
+
 
 //PARTS------------------------------------------------------------------------------------------
 Parts * head_insert_Parts(Parts* lst, char part_num[], char name[], char class[], char stock[])
@@ -186,8 +193,15 @@ Sets * Set_by_theme(Sets *lst)
 {
     char tema[100];
     int cont = 0;
+    Aux_Sets aux_sets[100];
+
+    for(int i = 0; i < 100;i++)
+    {
+        strcpy(aux_sets[i].set_num,"-");
+    }
 
     printf("Diga o tema -> ");
+    fflush(stdin);
     gets(tema);
     //strcpy(tema,"Castle");
     printf("%s",tema);
@@ -196,14 +210,44 @@ Sets * Set_by_theme(Sets *lst)
     
     for ( ; lst ; lst = lst->next ) {
         if(strcmp(lst->theme,tema) == 0){
+            strcpy(aux_sets[cont].set_num,lst->set_num);
+            strcpy(aux_sets[cont].name,lst->name);
+            strcpy(aux_sets[cont].year,lst->year);
+            strcpy(aux_sets[cont].theme,lst->theme);
             cont++;
-            printf("%s %s %s %s\n",lst->set_num, lst->name, lst->year, lst->theme);
+
+            //printf("%s %s %s %s\n",lst->set_num, lst->name, lst->year, lst->theme);
         }
     }
+
+    for(int x = 0; x < 100;x++)
+    {
+        for(int j = 0; j < 100;j++)
+        {   
+            if(aux_sets[x].year < aux_sets[j].year)
+            {
+                Aux_Sets auxx;
+
+                auxx = aux_sets[j];
+                aux_sets[j] = aux_sets[x];
+                aux_sets[x] = auxx;
+            }
+        }
+    }
+
 
     if(cont == 0)
     {
         printf("NADA");
+    }
+    else
+    {
+        for(int i = 0; i < 100;i++)
+        {
+            if(!(strcmp(aux_sets[i].set_num,"-") == 0))
+                printf("%s | %s | %s | %s\n",aux_sets[i].year, aux_sets[i].set_num, aux_sets[i].name, aux_sets[i].theme);
+        }
+        
     }
     //printf("%d",i);
     return aux == lst ? NULL : aux;
