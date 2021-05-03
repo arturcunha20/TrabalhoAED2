@@ -192,8 +192,8 @@ Sets * Read_Sets(Sets *sets)
 Sets * Set_by_theme(Sets *lst)
 {
     char tema[100];
-    int cont = 0;
-    Aux_Sets aux_sets[100];
+    int cont = 0,cont1=0;
+    Aux_Sets aux_sets[100],auxx;
 
     for(int i = 0; i < 100;i++)
     {
@@ -203,8 +203,6 @@ Sets * Set_by_theme(Sets *lst)
     printf("Diga o tema -> ");
     fflush(stdin);
     gets(tema);
-    //strcpy(tema,"Castle");
-    printf("%s",tema);
 
     Sets *aux = lst->next;
     
@@ -215,27 +213,28 @@ Sets * Set_by_theme(Sets *lst)
             strcpy(aux_sets[cont].year,lst->year);
             strcpy(aux_sets[cont].theme,lst->theme);
             cont++;
-
-            //printf("%s %s %s %s\n",lst->set_num, lst->name, lst->year, lst->theme);
         }
     }
-
-    for(int x = 0; x < 100;x++)
+    
+    for(int x = 0; x < 100; x++)
     {
-        for(int j = 0; j < 100;j++)
-        {   
-            if(aux_sets[x].year < aux_sets[j].year)
-            {
-                Aux_Sets auxx;
+        if(!(strcmp(aux_sets[x].set_num,"-") == 0)){
 
-                auxx = aux_sets[j];
-                aux_sets[j] = aux_sets[x];
-                aux_sets[x] = auxx;
+            for(int j = 0; j < 100; j++)
+            {   
+                if(!(strcmp(aux_sets[j].set_num,"-") == 0))
+                {
+                    if(aux_sets[x].year > aux_sets[j].year)
+                    {
+                        auxx = aux_sets[x];
+                        aux_sets[x] = aux_sets[j];
+                        aux_sets[j] = auxx;
+                    }
+                }
             }
         }
     }
-
-
+ 
     if(cont == 0)
     {
         printf("NADA");
@@ -247,9 +246,7 @@ Sets * Set_by_theme(Sets *lst)
             if(!(strcmp(aux_sets[i].set_num,"-") == 0))
                 printf("%s | %s | %s | %s\n",aux_sets[i].year, aux_sets[i].set_num, aux_sets[i].name, aux_sets[i].theme);
         }
-        
     }
-    //printf("%d",i);
     return aux == lst ? NULL : aux;
 }
 
