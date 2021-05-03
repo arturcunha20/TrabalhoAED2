@@ -194,6 +194,7 @@ Sets * Set_by_theme(Sets *lst)
     char tema[100];
     int cont = 0,cont1=0;
     Aux_Sets aux_sets[100],auxx;
+    Sets *aux = lst->next;
 
     for(int i = 0; i < 100;i++)
     {
@@ -204,7 +205,7 @@ Sets * Set_by_theme(Sets *lst)
     fflush(stdin);
     gets(tema);
 
-    Sets *aux = lst->next;
+    
     
     for ( ; lst ; lst = lst->next ) {
         if(strcmp(lst->theme,tema) == 0){
@@ -219,12 +220,13 @@ Sets * Set_by_theme(Sets *lst)
     for(int x = 0; x < 100; x++)
     {
         if(!(strcmp(aux_sets[x].set_num,"-") == 0)){
-
             for(int j = 0; j < 100; j++)
             {   
                 if(!(strcmp(aux_sets[j].set_num,"-") == 0))
                 {
-                    if(aux_sets[x].year > aux_sets[j].year)
+                    int year1 = atoi(aux_sets[x].year);
+                    int year2 = atoi(aux_sets[j].year);
+                    if( year1 < year2)
                     {
                         auxx = aux_sets[x];
                         aux_sets[x] = aux_sets[j];
@@ -262,7 +264,6 @@ int main() {
     parts = Read_Parts(parts);
 
     sets = Set_by_theme(sets);
-
 
     /*
     do
