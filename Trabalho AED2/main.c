@@ -36,6 +36,21 @@ typedef struct {
     char theme[500];
 }Aux_Sets;
 
+typedef struct {
+    char part_num[100];
+    char name[500];
+    char class[500];
+    char stock[300];
+}Aux_Parts;
+
+typedef struct {
+    char set_num[50];
+    char quantity[50];
+    char part_num[50];
+}Aux_Parts_Sets;
+
+
+
 
 //PARTS------------------------------------------------------------------------------------------
 Parts * head_insert_Parts(Parts* lst, char part_num[], char name[], char class[], char stock[])
@@ -252,6 +267,49 @@ Sets * Set_by_theme(Sets *lst)
     return aux == lst ? NULL : aux;
 }
 
+void Parts_of_Sets(Parts_Sets *parts_sets, Parts *parts)
+{
+    char conjunto[500];
+    int cont=0;
+    Aux_Parts_Sets aux_parts_sets[100];
+
+    for(int i=0;i<100;i++)
+    {
+        strcpy(aux_parts_sets[i].set_num,"-");
+    }
+
+    printf("Diga o Numero do conjunto ->");
+    fflush(stdin);
+    gets(conjunto);
+
+    for ( ; parts_sets ; parts_sets = parts_sets->next ) {
+        if(strcmp(parts_sets->set_num,conjunto) == 0){
+            strcpy(aux_parts_sets[cont].set_num,parts_sets->set_num);
+            strcpy(aux_parts_sets[cont].quantity,parts_sets->quantity);
+            strcpy(aux_parts_sets[cont].part_num,parts_sets->part_num);
+            cont++;
+        }
+    }
+
+    if(cont == 0)
+    {
+        printf("Nada");
+    }
+    else
+    {
+        for (int i = 0; i < 100; i++)
+        {
+            if(!(strcmp(aux_parts_sets[i].set_num,"-")==0))
+            {
+                printf("%s | %s | %s\n",aux_parts_sets[i].set_num,aux_parts_sets[i].quantity,aux_parts_sets[i].part_num);
+            }
+        }
+        
+    }
+
+}
+
+
 int main() {
     Parts_Sets *parts_sets = NULL;
     Parts *parts = NULL;
@@ -263,7 +321,9 @@ int main() {
     parts_sets = Read_Parts_Sets(parts_sets);
     parts = Read_Parts(parts);
 
-    sets = Set_by_theme(sets);
+    
+    //sets = Set_by_theme(sets);
+    Parts_of_Sets(parts_sets,parts);
 
     /*
     do
