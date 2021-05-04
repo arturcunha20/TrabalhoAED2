@@ -70,9 +70,12 @@ Parts * head_insert_Parts(Parts* lst, char part_num[], char name[], char class[]
 }
 
 void listar_Parts(Parts *lst) {
-        for ( ; lst ; lst = lst->next ) {
-            printf("%s %s %s %s\n", lst->part_num, lst->name, lst->class, lst->stock);
-        }
+    Parts *aux = lst;
+    system("cls || clear");
+    for ( ; aux ; aux = aux->next ) {
+        printf("%s %s %s %s\n", aux->part_num, aux->name, aux->class, aux->stock);
+    }
+    system("pause");
 } 
 
 
@@ -98,9 +101,12 @@ Sets * head_insert_Sets(Sets * lst, char set_num[], char name[], char year[], ch
 }
 
 void listar_Sets(Sets *lst) {
-        for ( ; lst ; lst = lst->next ) {
-            printf("%s %s %s %s\n",lst->set_num, lst->name, lst->year, lst->theme);
-        }
+    Sets *aux = lst;
+    system("cls || clear");
+    for ( ; aux ; aux = aux->next ) {
+        printf("%s %s %s %s\n",aux->set_num, aux->name, aux->year, aux->theme);
+    }
+    system("pause");
 } 
 
 
@@ -124,9 +130,12 @@ Parts_Sets * head_insert_PartsSets(Parts_Sets * lst, char set_num[], char quanti
 }
 
 void listar_Parts_Sets(Parts_Sets *lst) {
-        for ( ; lst ; lst = lst->next ) {
-            printf("%s %s %s\n",lst->set_num, lst->set_num, lst->quantity, lst->part_num);
-        }
+    Parts_Sets *aux = lst;
+    system("cls || clear");
+    for ( ; aux ; aux = aux->next ) {
+        printf("%s %s %s\n",aux->set_num, aux->set_num, aux->quantity, aux->part_num);
+    }
+    system("pause");
 } 
 
 //Read files
@@ -200,12 +209,13 @@ Sets * Read_Sets(Sets *sets)
         i++;
     }
     fclose(file);
-
     return sets;
+    
 }
 
 Sets * Set_by_theme(Sets *lst)
 {
+    system("cls || clear");
     char tema[100];
     int cont = 0,cont1=0;
     Aux_Sets aux_sets[100],auxx;
@@ -264,11 +274,13 @@ Sets * Set_by_theme(Sets *lst)
                 printf("%s | %s | %s | %s\n",aux_sets[i].year, aux_sets[i].set_num, aux_sets[i].name, aux_sets[i].theme);
         }
     }
+    system("pause");
     return lst;
 }
 
 void Parts_of_Sets(Parts_Sets *parts_sets)
 {
+    system("cls || clear");
     char conjunto[500];
     int cont=0;
     Aux_Parts_Sets aux_parts_sets[100];
@@ -304,13 +316,14 @@ void Parts_of_Sets(Parts_Sets *parts_sets)
             {
                 printf("%s | %s | %s\n",aux_parts_sets[i].set_num,aux_parts_sets[i].quantity,aux_parts_sets[i].part_num);
             }
-        }
-        
+        } 
     }
+    system("pause");
 }
 
 void parts_needed(Parts_Sets *parts_sets,Parts *parts)
 {
+    system("cls || clear");
     char conjunto[500];
     int cont=0;
     Aux_Parts_Sets aux_parts_sets[100];
@@ -353,10 +366,12 @@ void parts_needed(Parts_Sets *parts_sets,Parts *parts)
             }
         }   
     }
+    system("pause");
 }
 
 void Total_Stock(Parts *parts)
 {
+    system("cls || clear");
     Parts *aux = parts;
     int cont = 0,cont1 = 0;
 
@@ -369,15 +384,17 @@ void Total_Stock(Parts *parts)
     }
 
     printf("O total de pecas em stock e de %d\n\n",cont);
+    system("pause");
 }
 
 void Total_Parts_Sets(Parts_Sets *parts_sets)
 {
+    system("cls || clear");
     char conjunto[100];
     Parts_Sets *aux_parts_sets = parts_sets;
     int cont=0;
 
-    printf("\n\nDiga o Numero do conjunto ->");
+    printf("Diga o Numero do conjunto ->");
     fflush(stdin);
     gets(conjunto);
 
@@ -388,6 +405,7 @@ void Total_Parts_Sets(Parts_Sets *parts_sets)
     }
 
     printf("O total de pecas neste conjunto e de %d.\n\n",cont);
+    system("pause");
 }
 
 int main() {
@@ -403,7 +421,8 @@ int main() {
 
     do
     {
-        printf("\n1 - Listar");
+        system("cls || clear");
+        printf("1 - Listar");
         printf("\n2 - Conjuntos por ano");
         printf("\n3 - Pecas de um conjunto");
         printf("\n4 - Pecas Necessarias");
@@ -417,7 +436,8 @@ int main() {
             case 1:
             do
             {
-                printf("\n\n1 - Parts");
+                system("cls || clear");
+                printf("1 - Parts");
                 printf("\n2 - Sets");
                 printf("\n3 - Parts_Sets");
                 printf("\n0 - Voltar");
@@ -437,7 +457,7 @@ int main() {
             case 4: parts_needed(parts_sets,parts); break;   
             case 5: Total_Stock(parts); break;   
             case 6: Total_Parts_Sets(parts_sets); break;   
-            case 0: printf("Adeus"); break;
+            case 0: printf("Ate a proxima"); break;
         }
 
     } while (op < 1 && op > 3 || op != 0);
