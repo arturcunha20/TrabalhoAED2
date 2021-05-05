@@ -36,11 +36,11 @@ typedef struct {
     char theme[500];
 }Aux_Sets;
 
-typedef struct {
+typedef struct _Aux_Parts{
     char part_num[100];
-    char name[500];
-    char class[500];
-    char stock[300];
+    int cont;
+    struct _Aux_Parts* next;
+    struct _Aux_Parts* previous;
 }Aux_Parts;
 
 typedef struct {
@@ -48,9 +48,6 @@ typedef struct {
     char quantity[50];
     char part_num[50];
 }Aux_Parts_Sets;
-
-
-
 
 //PARTS------------------------------------------------------------------------------------------
 Parts * head_insert_Parts(Parts* lst, char part_num[], char name[], char class[], char stock[])
@@ -78,11 +75,6 @@ void listar_Parts(Parts *lst) {
     system("pause");
 } 
 
-
-
-
-
-
 //Sets------------------------------------------------------------------------------------------
 Sets * head_insert_Sets(Sets * lst, char set_num[], char name[], char year[], char theme[]) 
 {
@@ -108,10 +100,6 @@ void listar_Sets(Sets *lst) {
     }
     system("pause");
 } 
-
-
-
-
 
 //Parts_Sets------------------------------------------------------------------------------------------
 Parts_Sets * head_insert_PartsSets(Parts_Sets * lst, char set_num[], char quantity[], char part_num[]) 
@@ -408,6 +396,78 @@ void Total_Parts_Sets(Parts_Sets *parts_sets)
     system("pause");
 }
 
+Aux_Parts * head_insert_AUX(Aux_Parts * lst, char part_num[], int cont) 
+{
+    Aux_Parts *new = (Aux_Parts*) malloc(sizeof(Aux_Parts));
+
+    strcpy(new->part_num,part_num); 
+    new->cont = cont; 
+    new->next = lst;
+    new->previous = NULL;
+    if (new->next)
+        new->next->previous = new;
+
+    return new;
+}
+
+void Part_mais_utilizada(Parts_Sets *parts_sets)
+{
+    system("cls || clear");
+    Parts_Sets *aux = parts_sets;
+    Aux_Parts *AUX_parts = NULL;
+    Aux_Parts *AUX_parts_aux = NULL;
+
+    int cont=0,contmax = 0;
+    char peca[500];
+    int i=0;
+    for(;aux; aux = aux->next)
+    {
+        i=0;
+        if(AUX_parts)
+        {
+            AUX_parts_aux = AUX_parts;
+            for(;AUX_parts_aux;AUX_parts_aux = AUX_parts_aux->next)
+            {
+                if(strcmp(aux->part_num,AUX_parts_aux->part_num)==0)
+                {
+                    i = 1;
+                    AUX_parts = AUX_parts_aux;
+                    cont = AUX_parts->cont;
+                    //printf("%s %s || %d | ",AUX_parts->part_num,aux->part_num,cont);
+                    cont++;
+                    AUX_parts->cont = cont;
+                    //printf("%d\n",cont);
+                    //system("pause");
+                    //break;
+                }
+            }
+        }
+
+        if(i == 0)
+        {
+            AUX_parts = head_insert_AUX(AUX_parts,aux->part_num,1);
+        }
+        
+    }
+    
+    
+    for(AUX_parts_aux = AUX_parts;AUX_parts_aux;AUX_parts_aux = AUX_parts_aux->next)
+    {
+        if(AUX_parts_aux->cont > contmax)
+        {
+            contmax = AUX_parts_aux->cont;
+            strcpy(peca,AUX_parts_aux->part_num);
+        }
+        //printf("%d %s\n",AUX_parts_aux->cont,AUX_parts_aux->part_num);
+    }
+    
+
+
+    printf("%d\n",cont);
+    system("pause");
+
+}
+
 int main() {
     Parts_Sets *parts_sets = NULL;
     Parts *parts = NULL;
@@ -428,6 +488,7 @@ int main() {
         printf("\n4 - Pecas Necessarias");
         printf("\n5 - Total Stock");
         printf("\n6 - Total de pecas de um conjunto");
+        printf("\n7 - Peca mais utilizada");
         printf("\n0 - Sair");
         printf("\nOpcao-> ");
         scanf("%d",&op);
@@ -457,6 +518,7 @@ int main() {
             case 4: parts_needed(parts_sets,parts); break;   
             case 5: Total_Stock(parts); break;   
             case 6: Total_Parts_Sets(parts_sets); break;   
+            case 7: Part_mais_utilizada(parts_sets); break;
             case 0: printf("Ate a proxima"); break;
         }
 
