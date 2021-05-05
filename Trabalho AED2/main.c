@@ -49,6 +49,11 @@ typedef struct _list {
     Aux_Parts* last;
 } List_Parts;
 
+typedef struct _list_Parts {
+    Parts* first;
+    Parts* last;
+} List_Parts_Parts;
+
 typedef struct {
     char set_num[50];
     char quantity[50];
@@ -65,19 +70,23 @@ Parts * head_insert_Parts(Parts* lst, char part_num[], char name[], char class[]
     strcpy(new->class,class);
     strcpy(new->stock,stock);
     new->next = lst;
+    new->previous = NULL;
     if (new->next)
         new->next->previous = new;
     new->previous = NULL;
-
+      
     return new;
 }
 
 void listar_Parts(Parts *lst) {
     Parts *aux = lst;
+    int cont = 0;
     system("cls || clear");
     for ( ; aux ; aux = aux->next ) {
+        cont++;
         printf("%s %s %s %s\n", aux->part_num, aux->name, aux->class, aux->stock);
     }
+    printf("%d ",cont);
     system("pause");
 } 
 
@@ -133,7 +142,7 @@ void listar_Parts_Sets(Parts_Sets *lst) {
 } 
 
 //Read files
-Parts * Read_Parts(Parts *parts)
+Parts * Read_Parts(Parts *parts,List_Parts_Parts* list)
 {
     FILE *file;
     int i=0;
@@ -150,6 +159,7 @@ Parts * Read_Parts(Parts *parts)
             strtok(stock,"\n");
             //printf("%s",string);
             parts = head_insert_Parts(parts, part_num, name, class, stock);
+            tail_insert_AUX_Parts(parts,list);
         }
         i++;
     }
@@ -421,19 +431,38 @@ List_Parts* new_list() {
     return list;
 }
 
+List_Parts_Parts* new_list_Parts() {
+    List_Parts_Parts* list = (List_Parts_Parts*) malloc(sizeof(List_Parts_Parts));
+    assert(list);
+
+    list->first = list->last = NULL;
+    return list;
+}
+
+
 void tail_insert_AUX(Aux_Parts* lst,List_Parts* list) 
 {
     assert(lst);
 
-    // Save pointer to the first element, and keep list
     lst->next = list->first;
     list->first = lst;
   
-    // If list is empty, the last element is the first. 
     if (!list->last) {
         list->last = lst;
     }
        
+}
+
+void tail_insert_AUX_Parts(Parts* lst,List_Parts_Parts* list) 
+{
+    assert(lst);
+
+    lst->next = list->first;
+    list->first = lst;
+  
+    if (!list->last) {
+        list->last = lst;
+    }
 }
 
 void Part_mais_utilizada(Parts_Sets *parts_sets,Parts *parts)
@@ -503,12 +532,14 @@ void Part_mais_utilizada(Parts_Sets *parts_sets,Parts *parts)
 
 }
 
-void Alterar_Stock(Parts *parts)
+Parts* Alterar_Stock(Parts *parts,List_Parts_Parts *list)
 {
     Parts *aux = parts;
     char num_part[500];
     int stock=0,stock_ant=0;
-
+    int cont=0;
+    
+    system("cls || clear");
     printf("Diga o Numero da Part -> ");
     fflush(stdin);
     gets(num_part);
@@ -519,12 +550,23 @@ void Alterar_Stock(Parts *parts)
     {
         if(strcmp(aux->part_num,num_part) == 0)
         {
+            cont++;
             parts = aux;
             stock_ant = atoi(aux->stock);
             stock = stock_ant + stock;
             itoa(stock, parts->stock, 10);
         }
     }
+
+    if(cont == 0)
+    {
+        printf("Nao existe essa parte\n\n");
+    }
+    
+    parts = list->first;
+    system("pause");
+    return parts;
+
 }
 
 int main() {
@@ -533,10 +575,11 @@ int main() {
     Sets *sets = NULL;
     int op = 0,op1 = 0;
     char tema[100];
+    List_Parts_Parts *list_parts = new_list_Parts();
 
     sets = Read_Sets(sets);
     parts_sets = Read_Parts_Sets(parts_sets);
-    parts = Read_Parts(parts);
+    parts = Read_Parts(parts,list_parts);
 
     do
     {
@@ -548,6 +591,8 @@ int main() {
         printf("\n5 - Total Stock");
         printf("\n6 - Total de pecas de um conjunto");
         printf("\n7 - Peca mais utilizada");
+        printf("\n----------------------");
+        printf("\n8 - Peca mais utilizada");
         printf("\n0 - Sair");
         printf("\nOpcao-> ");
         scanf("%d",&op);
@@ -578,10 +623,11 @@ int main() {
             case 5: Total_Stock(parts); break;   
             case 6: Total_Parts_Sets(parts_sets); break;   
             case 7: Part_mais_utilizada(parts_sets,parts); break;
+            case 8: parts = Alterar_Stock(parts,list_parts); break;
             case 0: printf("Ate a proxima"); break;
         }
 
-    } while (op < 1 && op > 3 || op != 0);
+    } while (op < 1 && op > 8 || op != 0);
     
     return 0;
 }
