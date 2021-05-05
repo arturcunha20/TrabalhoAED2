@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdlib.h>
+#include <time.h>
+#include <assert.h>
+#include <math.h>
 
 typedef struct _Parts{
     char part_num[100];
@@ -40,8 +42,12 @@ typedef struct _Aux_Parts{
     char part_num[100];
     int cont;
     struct _Aux_Parts* next;
-    struct _Aux_Parts* previous;
 }Aux_Parts;
+
+typedef struct _list {
+    Aux_Parts* first;
+    Aux_Parts* last;
+} List_Parts;
 
 typedef struct {
     char set_num[50];
@@ -361,14 +367,15 @@ void Total_Stock(Parts *parts)
 {
     system("cls || clear");
     Parts *aux = parts;
-    int cont = 0,cont1 = 0;
+    int cont = 0,stock = 0;
 
     for ( ; aux ; aux = aux->next ) {
-        int stock = atoi(aux->stock);
-        if(stock>0)
+        stock = atoi(aux->stock);
+        if(stock > 0)
         {
             cont++;
         }
+        stock = 0;
     }
 
     printf("O total de pecas em stock e de %d\n\n",cont);
@@ -396,76 +403,128 @@ void Total_Parts_Sets(Parts_Sets *parts_sets)
     system("pause");
 }
 
-Aux_Parts * head_insert_AUX(Aux_Parts * lst, char part_num[], int cont) 
-{
-    Aux_Parts *new = (Aux_Parts*) malloc(sizeof(Aux_Parts));
+Aux_Parts* new_aux_parts(int cont,char part_num[]) {
+    Aux_Parts* c = (Aux_Parts*) malloc(sizeof(Aux_Parts));
+    assert(c);
 
-    strcpy(new->part_num,part_num); 
-    new->cont = cont; 
-    new->next = lst;
-    new->previous = NULL;
-    if (new->next)
-        new->next->previous = new;
-
-    return new;
+    c->cont = cont;
+    strcpy(c->part_num,part_num);
+    c->next = NULL;
+    return c;
 }
 
-void Part_mais_utilizada(Parts_Sets *parts_sets)
+List_Parts* new_list() {
+    List_Parts* list = (List_Parts*) malloc(sizeof(List_Parts));
+    assert(list);
+
+    list->first = list->last = NULL;
+    return list;
+}
+
+void tail_insert_AUX(Aux_Parts* lst,List_Parts* list) 
+{
+    assert(lst);
+
+    // Save pointer to the first element, and keep list
+    lst->next = list->first;
+    list->first = lst;
+  
+    // If list is empty, the last element is the first. 
+    if (!list->last) {
+        list->last = lst;
+    }
+       
+}
+
+void Part_mais_utilizada(Parts_Sets *parts_sets,Parts *parts)
 {
     system("cls || clear");
     Parts_Sets *aux = parts_sets;
     Aux_Parts *AUX_parts = NULL;
-    Aux_Parts *AUX_parts_aux = NULL;
-
+    List_Parts *list = new_list();
     int cont=0,contmax = 0;
     char peca[500];
     int i=0;
+
     for(;aux; aux = aux->next)
     {
         i=0;
         if(AUX_parts)
         {
-            AUX_parts_aux = AUX_parts;
-            for(;AUX_parts_aux;AUX_parts_aux = AUX_parts_aux->next)
+            for(AUX_parts = list->first;AUX_parts;AUX_parts = AUX_parts->next)
             {
-                if(strcmp(aux->part_num,AUX_parts_aux->part_num)==0)
+                if(strcmp(aux->part_num,AUX_parts->part_num)==0)
                 {
                     i = 1;
-                    AUX_parts = AUX_parts_aux;
                     cont = AUX_parts->cont;
                     //printf("%s %s || %d | ",AUX_parts->part_num,aux->part_num,cont);
                     cont++;
                     AUX_parts->cont = cont;
                     //printf("%d\n",cont);
                     //system("pause");
-                    //break;
+                    break;
                 }
             }
         }
 
         if(i == 0)
         {
-            AUX_parts = head_insert_AUX(AUX_parts,aux->part_num,1);
-        }
-        
+            AUX_parts = new_aux_parts(1,aux->part_num); 
+            tail_insert_AUX(AUX_parts,list);
+        }   
     }
-    
-    
-    for(AUX_parts_aux = AUX_parts;AUX_parts_aux;AUX_parts_aux = AUX_parts_aux->next)
+
+    for (AUX_parts = list->first; AUX_parts ; AUX_parts = AUX_parts->next) 
     {
-        if(AUX_parts_aux->cont > contmax)
+        if(AUX_parts->cont > contmax)
         {
-            contmax = AUX_parts_aux->cont;
-            strcpy(peca,AUX_parts_aux->part_num);
+            strcpy(peca,AUX_parts->part_num);
+            contmax = AUX_parts->cont;
         }
-        //printf("%d %s\n",AUX_parts_aux->cont,AUX_parts_aux->part_num);
+    }
+   
+    char part_num[100];
+    char name[500];
+    char class[500];
+    char stock[300];
+    Parts *auxP = NULL;
+    for (auxP = parts;auxP;auxP = auxP->next) 
+    {
+        if(strcmp(auxP->part_num,peca)==0)
+        {
+            strcpy(name,auxP->name);
+            strcpy(class,auxP->class);
+            strcpy(stock,auxP->stock);
+        }
     }
     
-
-
-    printf("%d\n",cont);
+    printf("Num_Part -> %s \nName -> %s \nClass -> %s\nStock -> %s\nCont -> %d\n",peca,name,class,stock,contmax);
     system("pause");
 
+}
+
+void Alterar_Stock(Parts *parts)
+{
+    Parts *aux = parts;
+    char num_part[500];
+    int stock=0,stock_ant=0;
+
+    printf("Diga o Numero da Part -> ");
+    fflush(stdin);
+    gets(num_part);
+    printf("Quanto stock quer adicionar-> ");
+    scanf("%d",&stock);
+
+    for(;aux;aux = aux->next)
+    {
+        if(strcmp(aux->part_num,num_part) == 0)
+        {
+            parts = aux;
+            stock_ant = atoi(aux->stock);
+            stock = stock_ant + stock;
+            itoa(stock, parts->stock, 10);
+        }
+    }
 }
 
 int main() {
@@ -518,7 +577,7 @@ int main() {
             case 4: parts_needed(parts_sets,parts); break;   
             case 5: Total_Stock(parts); break;   
             case 6: Total_Parts_Sets(parts_sets); break;   
-            case 7: Part_mais_utilizada(parts_sets); break;
+            case 7: Part_mais_utilizada(parts_sets,parts); break;
             case 0: printf("Ate a proxima"); break;
         }
 
