@@ -54,6 +54,16 @@ typedef struct _list_Parts {
     Parts* last;
 } List_Parts_Parts;
 
+typedef struct _list_Parts_Sets {
+    Parts_Sets* first;
+    Parts_Sets* last;
+} List_Parts_Sets;
+
+typedef struct _list_Sets {
+    Sets* first;
+    Sets* last;
+} List_Sets;
+
 typedef struct {
     char set_num[50];
     char quantity[50];
@@ -70,7 +80,6 @@ Parts * head_insert_Parts(Parts* lst, char part_num[], char name[], char class[]
     strcpy(new->class,class);
     strcpy(new->stock,stock);
     new->next = lst;
-    new->previous = NULL;
     if (new->next)
         new->next->previous = new;
     new->previous = NULL;
@@ -109,10 +118,13 @@ Sets * head_insert_Sets(Sets * lst, char set_num[], char name[], char year[], ch
 
 void listar_Sets(Sets *lst) {
     Sets *aux = lst;
+    int cont = 0;
     system("cls || clear");
     for ( ; aux ; aux = aux->next ) {
+        cont++;
         printf("%s %s %s %s\n",aux->set_num, aux->name, aux->year, aux->theme);
     }
+    printf("%d ",cont);
     system("pause");
 } 
 
@@ -134,10 +146,13 @@ Parts_Sets * head_insert_PartsSets(Parts_Sets * lst, char set_num[], char quanti
 
 void listar_Parts_Sets(Parts_Sets *lst) {
     Parts_Sets *aux = lst;
+    int cont=0;
     system("cls || clear");
     for ( ; aux ; aux = aux->next ) {
+        cont++;
         printf("%s %s %s\n",aux->set_num, aux->set_num, aux->quantity, aux->part_num);
     }
+    printf("-----> %d\n",cont);
     system("pause");
 } 
 
@@ -168,7 +183,7 @@ Parts * Read_Parts(Parts *parts,List_Parts_Parts* list)
     return parts;
 }
 
-Parts_Sets * Read_Parts_Sets(Parts_Sets *parts_Sets)
+Parts_Sets * Read_Parts_Sets(Parts_Sets *parts_Sets,List_Parts_Parts* list)
 {
     FILE *file;
     int i=0;
@@ -184,6 +199,7 @@ Parts_Sets * Read_Parts_Sets(Parts_Sets *parts_Sets)
             strtok(part_num,"\n");
             //printf("%s",string);
             parts_Sets = head_insert_PartsSets(parts_Sets, set_num, quantity, part_num);
+            tail_insert_Parts_Sets(parts_Sets,list);
         }
         i++;
     }
@@ -192,7 +208,7 @@ Parts_Sets * Read_Parts_Sets(Parts_Sets *parts_Sets)
     return parts_Sets;
 }
 
-Sets * Read_Sets(Sets *sets)
+Sets * Read_Sets(Sets *sets,List_Sets *list)
 {
     FILE *file;
     int i=0;
@@ -209,6 +225,7 @@ Sets * Read_Sets(Sets *sets)
             strtok(theme,"\n");
             //printf("%s",string);
             sets = head_insert_Sets(sets, set_num, name, year, theme);
+            tail_insert_AUX_Sets(sets, list);
         }
         i++;
     }
@@ -431,6 +448,14 @@ List_Parts* new_list() {
     return list;
 }
 
+List_Parts_Sets* new_list_Parts_Sets() {
+    List_Parts_Sets* list = (List_Parts_Sets*) malloc(sizeof(List_Parts_Sets));
+    assert(list);
+
+    list->first = list->last = NULL;
+    return list;
+}
+
 List_Parts_Parts* new_list_Parts() {
     List_Parts_Parts* list = (List_Parts_Parts*) malloc(sizeof(List_Parts_Parts));
     assert(list);
@@ -439,6 +464,13 @@ List_Parts_Parts* new_list_Parts() {
     return list;
 }
 
+List_Sets* new_list_Sets() {
+    List_Sets* list = (List_Sets*) malloc(sizeof(List_Sets));
+    assert(list);
+
+    list->first = list->last = NULL;
+    return list;
+}
 
 void tail_insert_AUX(Aux_Parts* lst,List_Parts* list) 
 {
@@ -449,11 +481,34 @@ void tail_insert_AUX(Aux_Parts* lst,List_Parts* list)
   
     if (!list->last) {
         list->last = lst;
-    }
-       
+    }  
+}
+
+void tail_insert_Parts_Sets(Parts_Sets* lst,List_Parts_Sets* list) 
+{
+    assert(lst);
+
+    lst->next = list->first;
+    list->first = lst;
+  
+    if (!list->last) {
+        list->last = lst;
+    }  
 }
 
 void tail_insert_AUX_Parts(Parts* lst,List_Parts_Parts* list) 
+{
+    assert(lst);
+
+    lst->next = list->first;
+    list->first = lst;
+  
+    if (!list->last) {
+        list->last = lst;
+    }
+}
+
+void tail_insert_AUX_Sets(Sets* lst,List_Sets* list) 
 {
     assert(lst);
 
@@ -552,8 +607,6 @@ Parts* Alterar_Stock(Parts *parts,List_Parts_Parts *list)
         {
             cont++;
             parts = aux;
-            stock_ant = atoi(aux->stock);
-            stock = stock_ant + stock;
             itoa(stock, parts->stock, 10);
         }
     }
@@ -569,6 +622,143 @@ Parts* Alterar_Stock(Parts *parts,List_Parts_Parts *list)
 
 }
 
+Parts * RemoverClass(Parts *parts,List_Parts_Parts *list)
+{
+    Parts * aux_next = NULL;
+    Parts * aux_previous = NULL;
+    char class[500];
+    int cont=0;
+
+    system("cls || clear");
+    printf("Diga o nome da Class -> ");
+    fflush(stdin);
+    gets(class);
+
+    for(;parts;parts = parts->next)
+    {
+        if(strcmp(parts->class,class)==0)
+        {
+            aux_next = parts->next;
+            aux_previous = parts->previous;
+
+            parts->previous->next = aux_next;
+            parts->next->previous = aux_previous; 
+        }
+    }
+    parts = list->first;
+
+    system("pause");
+}
+
+Sets * RemoverTheme(Sets *sets,List_Sets *list)
+{
+    Sets * aux_next = NULL;
+    Sets * aux_previous = NULL;
+    char theme[500];
+    int cont=0;
+
+    system("cls || clear");
+    printf("Diga o nome do Theme -> ");
+    fflush(stdin);
+    gets(theme);
+
+    for(;sets;sets = sets->next)
+    {
+        if(strcmp(sets->theme,theme)==0)
+        {
+            aux_next = sets->next;
+            aux_previous = sets->previous;
+
+            sets->previous->next = aux_next;
+            sets->next->previous = aux_previous;     
+        }
+    }
+    sets = list->first;
+    system("pause");
+    return sets;
+}
+
+Parts * AdicionarStock(Parts *parts,Parts_Sets *parts_sets, List_Parts_Parts *list_parts,List_Parts_Sets *list_parts_sets)
+{
+    char set_num[500];
+    int cont=0,quantidade=0,stock = 0;
+    Aux_Parts* aux = NULL;
+    List_Parts * list_aux = new_list();
+
+    Parts * aux_parts = NULL;
+    List_Parts_Parts * aux_list_parts = new_list_Parts();
+
+    system("cls || clear");
+    printf("Diga o numero do Set -> ");
+    fflush(stdin);
+    gets(set_num);
+    printf("Diga a quantidade que quer -> ");
+    scanf("%d",&quantidade);
+
+    for(;parts_sets;parts_sets = parts_sets->next)
+    {
+        if(strcmp(parts_sets->set_num,set_num)==0)
+        {
+            cont++;
+            aux = new_aux_parts(1,parts_sets->part_num);
+            tail_insert_AUX(aux,list_aux);
+        }
+    }
+
+    if(!(cont == 0))
+    {
+        parts_sets = list_parts_sets->first;
+
+        for(;aux;aux = aux->next)
+        {   
+            parts = list_parts->first;
+            for(;parts;parts = parts->next)
+            {
+                if(strcmp(parts->part_num,aux->part_num)==0)
+                {
+                    aux_parts = head_insert_Parts(aux_parts, parts->part_num, parts->name,parts->class,parts->stock);
+                    tail_insert_AUX_Parts(aux_parts,aux_list_parts);
+                    break;
+                }
+            }
+        }
+
+        printf("\n");
+        for(;aux_parts;aux_parts = aux_parts->next)
+        {
+            printf("%s | %s\n",aux_parts->part_num,aux_parts->stock);
+        }        
+        
+        printf("\n\n\n\n\n");
+
+        aux = list_aux->first;
+        for(;aux;aux = aux->next)
+        {   
+            parts = list_parts->first;
+            for(;parts;parts = parts->next)
+            {
+                if(strcmp(parts->part_num,aux->part_num)==0)
+                {
+                    stock = atoi(parts->stock);
+                    quantidade = quantidade + stock;
+                    itoa(quantidade, parts->stock, 10);
+                    printf("%s %s\n",parts->part_num,parts->stock);
+                    //break;
+                }
+            }
+        }
+    }
+    else
+    {
+        printf("Esse numero de Set nao existe\n");
+    }
+
+    
+    system("pause");
+    return parts;
+    
+}
+
 int main() {
     Parts_Sets *parts_sets = NULL;
     Parts *parts = NULL;
@@ -576,9 +766,11 @@ int main() {
     int op = 0,op1 = 0;
     char tema[100];
     List_Parts_Parts *list_parts = new_list_Parts();
+    List_Parts_Sets *list_parts_sets = new_list_Parts_Sets();
+    List_Sets *list_sets = new_list_Sets(); 
 
-    sets = Read_Sets(sets);
-    parts_sets = Read_Parts_Sets(parts_sets);
+    sets = Read_Sets(sets,list_sets);
+    parts_sets = Read_Parts_Sets(parts_sets,list_parts_sets);
     parts = Read_Parts(parts,list_parts);
 
     do
@@ -592,7 +784,10 @@ int main() {
         printf("\n6 - Total de pecas de um conjunto");
         printf("\n7 - Peca mais utilizada");
         printf("\n----------------------");
-        printf("\n8 - Peca mais utilizada");
+        printf("\n8 - Alterar Stock");
+        printf("\n9 - Adicionar Stock Set");
+        printf("\n10 - Remover Class");
+        printf("\n11 - Remover Theme");
         printf("\n0 - Sair");
         printf("\nOpcao-> ");
         scanf("%d",&op);
@@ -624,10 +819,12 @@ int main() {
             case 6: Total_Parts_Sets(parts_sets); break;   
             case 7: Part_mais_utilizada(parts_sets,parts); break;
             case 8: parts = Alterar_Stock(parts,list_parts); break;
+            case 9: parts = AdicionarStock(parts,parts_sets,list_parts,list_parts_sets); break;
+            case 10: parts = RemoverClass(parts,list_parts); break;
+            case 11: sets = RemoverTheme(sets,list_sets); break;
             case 0: printf("Ate a proxima"); break;
         }
-
-    } while (op < 1 && op > 8 || op != 0);
+    } while (op < 1 && op > 10 || op != 0);
     
     return 0;
 }
