@@ -643,6 +643,7 @@ Parts * RemoverClass(Parts *parts,List_Parts_Parts *list)
 
             parts->previous->next = aux_next;
             parts->next->previous = aux_previous; 
+            free(parts);
         }
     }
     parts = list->first;
@@ -670,7 +671,8 @@ Sets * RemoverTheme(Sets *sets,List_Sets *list)
             aux_previous = sets->previous;
 
             sets->previous->next = aux_next;
-            sets->next->previous = aux_previous;     
+            sets->next->previous = aux_previous;
+            free(sets);    
         }
     }
     sets = list->first;
@@ -723,15 +725,9 @@ Parts * AdicionarStock(Parts *parts,Parts_Sets *parts_sets, List_Parts_Parts *li
             }
         }
 
-        printf("\n");
-        for(;aux_parts;aux_parts = aux_parts->next)
-        {
-            printf("%s | %s\n",aux_parts->part_num,aux_parts->stock);
-        }        
-        
-        printf("\n\n\n\n\n");
-
         aux = list_aux->first;
+        parts = list_parts->first;
+
         for(;aux;aux = aux->next)
         {   
             parts = list_parts->first;
@@ -740,10 +736,24 @@ Parts * AdicionarStock(Parts *parts,Parts_Sets *parts_sets, List_Parts_Parts *li
                 if(strcmp(parts->part_num,aux->part_num)==0)
                 {
                     stock = atoi(parts->stock);
-                    quantidade = quantidade + stock;
-                    itoa(quantidade, parts->stock, 10);
-                    printf("%s %s\n",parts->part_num,parts->stock);
-                    //break;
+                    int quantidade_som = quantidade + stock;
+                    itoa(quantidade_som, parts->stock, 10);
+                    quantidade_som = 0;
+                    break;
+                }
+            }
+        }
+        parts = list_parts->first;
+        aux = list_aux->first;
+        printf("\nStock Agora ->\n");
+        for(;parts;parts = parts->next)
+        {
+            aux = list_aux->first;
+            for(;aux;aux = aux->next)
+            {
+                if(strcmp(aux->part_num,parts->part_num)==0)
+                {
+                    printf("%s | %s\n",parts->part_num,parts->stock);
                 }
             }
         }
@@ -753,7 +763,7 @@ Parts * AdicionarStock(Parts *parts,Parts_Sets *parts_sets, List_Parts_Parts *li
         printf("Esse numero de Set nao existe\n");
     }
 
-    
+    printf("\n");
     system("pause");
     return parts;
     
